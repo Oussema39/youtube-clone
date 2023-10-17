@@ -1,7 +1,8 @@
 import { useState } from "react";
 import CategoryShips from "./components/CategoryShips";
-import { Categories } from "./data/placeholders";
+import { Categories, videos } from "./data/placeholders";
 import Header from "./layouts/Header";
+import VideoCardItem from "./components/VideoCardItem";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -17,6 +18,11 @@ function App() {
               selectedCategory={selectedCategory}
               onSelect={setSelectedCategory}
             />
+          </div>
+          <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
+            {videos.map((video) => (
+              <VideoCardItem key={video.id} {...video} />
+            ))}
           </div>
         </div>
       </div>
