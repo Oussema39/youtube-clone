@@ -2,7 +2,7 @@ import React, { ElementType } from "react";
 import { buttonStyles } from "./Button";
 import { twMerge } from "tailwind-merge";
 
-type SmallSideBarItemProps = {
+export type SmallSideBarItemProps = {
   Icon: ElementType;
   title: string;
   url: string;

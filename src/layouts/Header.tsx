@@ -2,39 +2,32 @@ import { ArrowLeft, Bell, Menu, Mic, Search, Upload, User } from "lucide-react";
 import logo from "../assets/youtube-logo.svg";
 import Button from "../components/Button";
 import { useState } from "react";
+import { useSidebarContext } from "../context/SidebarContext";
 
 const Header = () => {
   const [showFullWidthSearch, setShowFullWidthSearch] = useState(false);
   return (
     <div className="flex gap-10 lg:gap-20 justify-between pt-2 mb-6 mx-4">
-      <div
-        className={`gap-4 items-center flex-shrink-0 ${
-          showFullWidthSearch ? "hidden" : "flex "
-        }`}
-      >
-        <Button variant="ghost" size="icon">
-          <Menu />
-        </Button>
-        <a href="/">
-          <img src={logo} alt="logo" className="h-8" />
-        </a>
-      </div>
+      <HeaderFirstSection hidden={showFullWidthSearch} />
       <form
         className={`${
           showFullWidthSearch ? "flex" : "hidden md:flex"
         } gap-4 flex-grow justify-center`}
       >
-        <Button
-          onClick={() => setShowFullWidthSearch(false)}
-          type="button"
-          size={"icon"}
-          variant={"ghost"}
-          className={`flex-shrink-0 ${
-            showFullWidthSearch ? "block" : "hidden"
-          }`}
-        >
-          <ArrowLeft />
-        </Button>
+        {showFullWidthSearch && (
+          <Button
+            onClick={() => setShowFullWidthSearch(false)}
+            type="button"
+            size={"icon"}
+            variant={"ghost"}
+            className={`flex-shrink-0 ${
+              showFullWidthSearch ? "block" : "hidden"
+            }`}
+          >
+            <ArrowLeft />
+          </Button>
+        )}
+
         <div className="flex flex-grow max-w-[600px]">
           <input
             type="search"
@@ -75,6 +68,25 @@ const Header = () => {
           <User />
         </Button>
       </div>
+    </div>
+  );
+};
+
+export const HeaderFirstSection = ({ hidden }: { hidden: boolean }) => {
+  const { toggle } = useSidebarContext();
+
+  return (
+    <div
+      className={`gap-4 items-center flex-shrink-0 ${
+        hidden ? "hidden" : "flex "
+      }`}
+    >
+      <Button onClick={toggle} variant="ghost" size="icon">
+        <Menu />
+      </Button>
+      <a href="/">
+        <img src={logo} alt="logo" className="h-8" />
+      </a>
     </div>
   );
 };
