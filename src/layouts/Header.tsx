@@ -6,22 +6,26 @@ import { useSidebarContext } from "../context/SidebarContext";
 import { signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../context/FirebaseContext";
 import FileUpload from "../components/form/FileUpload";
+import { useAppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const [showFullWidthSearch, setShowFullWidthSearch] = useState(false);
   const [showFileUpload, setShowFileUpload] = useState(false);
-
   const { auth, googleProvider } = useFirebase();
+  const { setUser, user } = useAppContext();
 
-  const handleUpload = () => {
-    const email = localStorage.getItem("email");
-    if (!email && auth && googleProvider) {
-      signInWithPopup(auth, googleProvider).then((data) => {
-        data?.user?.email && localStorage.setItem("email", data?.user?.email);
-      });
-    } else {
-      setShowFileUpload(true);
-    }
+  const handleUpload = async () => {
+    // if (!user?.email && auth && googleProvider) {
+    //   try {
+    //     const { user } = await signInWithPopup(auth, googleProvider);
+    //     setUser(user);
+    //   } catch (error) {
+    //     toast.error("Something went wrong! Please login again");
+    //   }
+    // } else {
+    setShowFileUpload(true);
+    // }
   };
 
   return (
@@ -77,8 +81,8 @@ const Header = () => {
           <Button size={"icon"} variant={"ghost"} className="md:hidden">
             <Mic />
           </Button>
-          <Button size={"icon"} variant={"ghost"}>
-            <Upload onClick={handleUpload} />
+          <Button size={"icon"} variant={"ghost"} onClick={handleUpload}>
+            <Upload />
           </Button>
           <Button size={"icon"} variant={"ghost"}>
             <Bell />
@@ -89,13 +93,14 @@ const Header = () => {
         </div>
       </div>
       {showFileUpload && (
-        <div className={`absolute inset-0 bg-slate-300 justify-center z-[999]`}>
-          <FileUpload
-            onComplete={() => {
-              setShowFileUpload(false);
-            }}
-          />
-        </div>
+        <FileUpload
+          onClose={() => {
+            setShowFileUpload(false);
+          }}
+          onComplete={() => {
+            setShowFileUpload(false);
+          }}
+        />
       )}
     </>
   );
