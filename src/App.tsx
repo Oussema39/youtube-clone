@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CategoryShips from "./components/CategoryShips";
 import { Categories, videos } from "./data/placeholders";
 import Header from "./layouts/Header";
@@ -6,9 +6,24 @@ import VideoCardItem from "./components/VideoCardItem";
 import Sidebar from "./layouts/Sidebar";
 import SidebarProvider from "./context/SidebarContext";
 import AppProvider from "./context/AppContext";
+import { useFirebase } from "./context/FirebaseContext";
+import { getAllVideosURLs } from "./lib/getAllVideos";
+import { toast } from "react-toastify";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [videosList, setVideosList] = useState([]);
+  const { storage } = useFirebase();
+
+  useEffect(() => {
+    if (!storage) return;
+    (async () => {
+      const videos: string[] =
+        (await getAllVideosURLs(storage, "/files")) || [];
+      Array.isArray(videos) && setVideosList(videos);
+    })();
+  }, [storage]);
+
   return (
     <AppProvider>
       <SidebarProvider>
@@ -26,7 +41,11 @@ function App() {
               </div>
               <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
                 {videos.map((video) => (
-                  <VideoCardItem key={video.id} {...video} />
+                  <VideoCardItem
+                    key={video.id}
+                    {...video}
+                    videoUrl={videosList?.[0]}
+                  />
                 ))}
               </div>
             </div>
