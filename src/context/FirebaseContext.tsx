@@ -9,7 +9,7 @@ import {
 import { initializeApp, FirebaseApp, deleteApp } from "firebase/app";
 import { firebaseConfig } from "../utils/config";
 import { Firestore, getFirestore } from "firebase/firestore";
-import { Auth, getAuth, GoogleAuthProvider } from "firebase/auth";
+import { Auth, getAuth, GoogleAuthProvider, User } from "firebase/auth";
 import { FirebaseStorage, getStorage } from "firebase/storage";
 
 export type FirebaseContextType = {
@@ -21,14 +21,13 @@ export type FirebaseContextType = {
 };
 
 const FirebaseContext = createContext<FirebaseContextType | null>(null);
+const googleProvider = new GoogleAuthProvider();
 
 const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const [app, setApp] = useState<FirebaseApp | null>(null);
   const [db, setDb] = useState<Firestore | null>(null);
   const [auth, setAuth] = useState<Auth | null>(null);
   const [storage, setStorage] = useState<FirebaseStorage | null>(null);
-
-  const googleProvider = new GoogleAuthProvider();
 
   const value = useMemo<FirebaseContextType>(
     () => ({ app, db, auth, googleProvider, storage }),
@@ -59,7 +58,7 @@ export const useFirebase = () => {
   const firebaseApp = useContext(FirebaseContext);
   if (firebaseApp === null)
     throw Error("Cannot use Firebase context out of its Provider");
-  return firebaseApp;
+  return { ...firebaseApp, user: firebaseApp.auth?.currentUser };
 };
 
 export default FirebaseProvider;

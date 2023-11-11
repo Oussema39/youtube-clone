@@ -15,12 +15,16 @@ const FileUpload = ({ onComplete, onClose }: FileUploadProps) => {
   const inputRef = createRef<HTMLInputElement>();
   const progressRef = createRef<HTMLDivElement>();
   const [uploadProgress, setUploadProgress] = useState(0);
-  const { storage } = useFirebase();
+  const { storage, auth } = useFirebase();
+  const { user } = useFirebase();
 
   const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
 
-    const fileRef = ref(storage as FirebaseStorage, `files/${uuidv4()}`);
+    const fileRef = ref(
+      storage as FirebaseStorage,
+      `${import.meta.env.VITE_STORAGE_VIDEOS_PATH}/${user?.uid}/${uuidv4()}`
+    );
     const uploadTask = uploadBytesResumable(fileRef, e.target.files[0]);
 
     uploadTask.on("state_changed", (snapshot) => {

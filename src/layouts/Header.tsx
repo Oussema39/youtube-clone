@@ -6,26 +6,24 @@ import { useSidebarContext } from "../context/SidebarContext";
 import { signInWithPopup } from "firebase/auth";
 import { useFirebase } from "../context/FirebaseContext";
 import FileUpload from "../components/form/FileUpload";
-import { useAppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 
 const Header = () => {
   const [showFullWidthSearch, setShowFullWidthSearch] = useState(false);
   const [showFileUpload, setShowFileUpload] = useState(false);
-  const { auth, googleProvider } = useFirebase();
-  const { setUser, user } = useAppContext();
+  const { auth, googleProvider, user } = useFirebase();
 
   const handleUpload = async () => {
-    // if (!user?.email && auth && googleProvider) {
-    //   try {
-    //     const { user } = await signInWithPopup(auth, googleProvider);
-    //     setUser(user);
-    //   } catch (error) {
-    //     toast.error("Something went wrong! Please login again");
-    //   }
-    // } else {
-    setShowFileUpload(true);
-    // }
+    if (auth && !user?.email && googleProvider) {
+      try {
+        await signInWithPopup(auth, googleProvider);
+        setShowFileUpload(true);
+      } catch (error) {
+        toast.error("Something went wrong! Please login again");
+      }
+    } else {
+      setShowFileUpload(true);
+    }
   };
 
   return (
@@ -87,8 +85,20 @@ const Header = () => {
           <Button size={"icon"} variant={"ghost"}>
             <Bell />
           </Button>
-          <Button size={"icon"} variant={"ghost"}>
-            <User />
+          <Button
+            size={"icon"}
+            variant={"ghost"}
+            className={`${user?.photoURL ? "p-1.5" : "p-2.5"}`}
+          >
+            {user?.photoURL ? (
+              <img
+                className="rounded-full"
+                src={user.photoURL}
+                alt="user-photo"
+              />
+            ) : (
+              <User />
+            )}
           </Button>
         </div>
       </div>
